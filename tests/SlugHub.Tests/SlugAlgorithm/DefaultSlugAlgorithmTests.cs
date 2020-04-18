@@ -50,15 +50,13 @@ namespace SlugHub.Tests.SlugAlgorithm
         [Test]
         public void GenerateSlug_WithOptions_applies_manipulators_in_order()
         {
-            var func1 = A.Fake<Func<string, string>>();
-            var func2 = A.Fake<Func<string, string>>();
-            var func3 = A.Fake<Func<string, string>>();
+            Func<string, string> func1 = s => s + "a";
+            Func<string, string> func2 = s => s + "b";
+            Func<string, string> func3 = s => s + "c";
 
-            var result = _defaultSlugAlgorithm.Slug("some text", new SlugAlgorithmOptions(func1, func2, func3));
+            var result = _defaultSlugAlgorithm.Slug("input", new SlugAlgorithmOptions(func1, func2, func3));
 
-            A.CallTo(() => func1.Invoke(A<string>._)).MustHaveHappened()
-                .Then(A.CallTo(() => func2.Invoke(A<string>._)).MustHaveHappened())
-                .Then(A.CallTo(() => func3.Invoke(A<string>._)).MustHaveHappened());
+            Assert.AreEqual("inputabc", result);
         }
     }
 }
