@@ -1,5 +1,4 @@
 ﻿using System;
-using FakeItEasy;
 using NUnit.Framework;
 using SlugHub.SlugAlgorithm;
 
@@ -32,6 +31,7 @@ namespace SlugHub.Tests.SlugAlgorithm
             Assert.That(result, Is.EqualTo("sometext"));
         }
 
+        [Test]
         public void GenerateSlug_replaces_accented_characters()
         {
             var result = _defaultSlugAlgorithm.Slug("this téxt is àçé");
@@ -56,7 +56,7 @@ namespace SlugHub.Tests.SlugAlgorithm
 
             var result = _defaultSlugAlgorithm.Slug("input", new SlugAlgorithmOptions(func1, func2, func3));
 
-            Assert.AreEqual("inputabc", result);
+            Assert.That(result, Is.EqualTo("inputabc"));
         }
     }
 }
