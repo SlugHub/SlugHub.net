@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/SlugHub.CosmosDB/" />
+  <Folder Name="/SlugHub.CosmosDB/src/">
+    <Project Path="SlugHub.CosmosDB/src/SlugHub.CosmosDB.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub.CosmosDB/tests/">
+    <Project Path="SlugHub.CosmosDB/tests/SlugHub.CosmosDB.Tests/SlugHub.CosmosDB.Tests.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub.SqlServer/" />
+  <Folder Name="/SlugHub.SqlServer/samples/">
+    <Project Path="SlugHub.SqlServer/samples/SlugHub.SqlServer.ConsoleAppSample/SlugHub.SqlServer.ConsoleAppSample.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub.SqlServer/src/">
+    <Project Path="SlugHub.SqlServer/src/SlugHub.SqlServer/SlugHub.SqlServer.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub.SqlServer/tests/">
+    <Project Path="SlugHub.SqlServer/tests/SlugHub.SqlServer.Tests/SlugHub.SqlServer.Tests.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub/" />
+  <Folder Name="/SlugHub/samples/">
+    <Project Path="SlugHub/samples/SlugHub.ConsoleAppSample/SlugHub.ConsoleAppSample.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub/src/">
+    <Project Path="SlugHub/src/SlugHub.csproj" />
+  </Folder>
+  <Folder Name="/SlugHub/tests/">
+    <Project Path="SlugHub/tests/SlugHub.Tests/SlugHub.Tests.csproj" />
+  </Folder>
+</Solution>

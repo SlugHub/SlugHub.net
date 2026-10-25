@@ -1,0 +1,30 @@
+name: SlugHub.SqlServer
+
+on:
+  push:
+    branches: [master]
+    tags: ['SlugHub.SqlServer-v*']
+    paths:
+      - 'SlugHub.SqlServer/**'
+      - 'SlugHub/src/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub-sqlserver.yml'
+  pull_request:
+    paths:
+      - 'SlugHub.SqlServer/**'
+      - 'SlugHub/src/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub-sqlserver.yml'
+  workflow_dispatch:
+
+jobs:
+  package:
+    uses: ./.github/workflows/_package.yml
+    with:
+      package: SlugHub.SqlServer
+      project: SlugHub.SqlServer/src/SlugHub.SqlServer/SlugHub.SqlServer.csproj
+      tests: SlugHub.SqlServer/tests/SlugHub.SqlServer.Tests/SlugHub.SqlServer.Tests.csproj
+      database: sqlserver
+    secrets: inherit

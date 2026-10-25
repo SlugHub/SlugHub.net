@@ -14,7 +14,7 @@ Output:
 > some-text-that-needs-slugging
 
 #### Grouping Key ####
-The `Slug` object has an optional.0 `GroupingKey` property.  
+The `Slug` object has an optional `GroupingKey` property.  
 This can be used to differentiate between applications, accounts, domains, or anything. You could use this to deploy a multi-tenant service that serves slugs to all of your services.
 
 ### Generating unique slugs using iteration ###
@@ -80,6 +80,9 @@ If you want something more persistable, simply create one, implementing the ligh
 
     public interface ISlugStore
     {
-        Task<bool> ExistsAsync(string slug);
-        Task StoreAsync (Slug slug);
+        Task<bool> ExistsAsync(string slug, string groupingKey);
+        Task StoreAsync(Slug slug);
     }
+
+
+Ready-made stores: [SlugHub.SqlServer](https://www.nuget.org/packages/SlugHub.SqlServer), [SlugHub.CosmosDB](https://www.nuget.org/packages/SlugHub.CosmosDB).

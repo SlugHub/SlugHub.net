@@ -1,15 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <PackageId>SlugHub</PackageId>
-    <Authors>Cohoda LTD</Authors>
     <Description>Create unique, customisable slugs for text. Persist them to ensure uniqueness.</Description>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Targets modern .NET (net8.0, net10.0). .NET Framework and netstandard1.3 are no longer supported.</PackageReleaseNotes>
     <PackageTags>slug text-slug url-slug</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/SlugHub/SlugHub.net</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

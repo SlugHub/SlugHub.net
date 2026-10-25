@@ -1,0 +1,96 @@
+# Shared build/test/pack/publish for one package. Called by each package's own workflow.
+name: package
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        description: Package id, also the tag prefix (SlugHub-v1.2.3)
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      tests:
+        required: true
+        type: string
+      database:
+        description: Database to start for integration tests (sqlserver, cosmosdb), if any
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SLUGHUB_SQLSERVER_CONNECTION: ${{ inputs.database == 'sqlserver' && 'Server=localhost,1433;User Id=sa;Password=SlugHub_Pass123!;TrustServerCertificate=True' || '' }}
+      SLUGHUB_COSMOSDB_CONNECTION: ${{ inputs.database == 'cosmosdb' && 'AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start SQL Server
+        if: inputs.database == 'sqlserver'
+        run: |
+          docker run -d --name mssql -e ACCEPT_EULA=Y -e 'MSSQL_SA_PASSWORD=SlugHub_Pass123!' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          for i in $(seq 1 60); do
+            docker exec mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'SlugHub_Pass123!' -Q 'select 1' >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          docker logs mssql; exit 1
+
+      - name: Start Cosmos DB emulator
+        if: inputs.database == 'cosmosdb'
+        run: |
+          docker run -d --name cosmos -p 8081:8081 mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview --protocol https
+          for i in $(seq 1 60); do
+            curl -ksf https://localhost:8081/ >/dev/null && exit 0
+            sleep 2
+          done
+          docker logs cosmos; exit 1
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      # Versions live in each csproj (VersionPrefix). Tag builds must match it, other builds get a ci suffix.
+      - name: Set version
+        run: |
+          version=$(dotnet msbuild "${{ inputs.project }}" -getProperty:VersionPrefix)
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            if [[ "$GITHUB_REF_NAME" != "${{ inputs.package }}-v$version" ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match ${{ inputs.package }}-v$version from ${{ inputs.project }}"
+              exit 1
+            fi
+            echo "SUFFIX_ARG=" >> "$GITHUB_ENV"
+          else
+            echo "SUFFIX_ARG=--version-suffix ci.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+          fi
+
+      - run: dotnet build "${{ inputs.tests }}" -c Release $SUFFIX_ARG
+      - run: dotnet test "${{ inputs.tests }}" -c Release --no-build
+      - run: dotnet pack "${{ inputs.project }}" -c Release --no-build $SUFFIX_ARG -o artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.package }}
+          path: artifacts/${{ inputs.package }}.*.nupkg
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    environment: nuget
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.package }}
+          path: artifacts
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

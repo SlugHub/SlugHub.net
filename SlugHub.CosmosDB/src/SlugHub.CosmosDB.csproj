@@ -1,19 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageId>SlugHub.CosmosDB</PackageId>
+    <Description>Azure Cosmos DB storage mechanism for SlugHub</Description>
+    <PackageReleaseNotes>First release.</PackageReleaseNotes>
+    <PackageTags>slug text-slug url-slug cosmosdb</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SlugHub" Version="1.0.7" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="1.22.0" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.63.2" />
+    <!-- Microsoft.Azure.Cosmos requires an explicit Newtonsoft.Json reference -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
-    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="1.9.1" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\SlugHub\src\SlugHub.csproj" />
   </ItemGroup>
 
 </Project>

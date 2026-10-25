@@ -1,0 +1,30 @@
+name: SlugHub.CosmosDB
+
+on:
+  push:
+    branches: [master]
+    tags: ['SlugHub.CosmosDB-v*']
+    paths:
+      - 'SlugHub.CosmosDB/**'
+      - 'SlugHub/src/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub-cosmosdb.yml'
+  pull_request:
+    paths:
+      - 'SlugHub.CosmosDB/**'
+      - 'SlugHub/src/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub-cosmosdb.yml'
+  workflow_dispatch:
+
+jobs:
+  package:
+    uses: ./.github/workflows/_package.yml
+    with:
+      package: SlugHub.CosmosDB
+      project: SlugHub.CosmosDB/src/SlugHub.CosmosDB.csproj
+      tests: SlugHub.CosmosDB/tests/SlugHub.CosmosDB.Tests/SlugHub.CosmosDB.Tests.csproj
+      database: cosmosdb
+    secrets: inherit
