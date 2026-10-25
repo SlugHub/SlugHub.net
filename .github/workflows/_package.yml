@@ -1,4 +1,4 @@
-# Shared build/test/pack/publish for one package. Called by each package's own workflow.
+# Shared build/test/pack for one package. Called by each package's own workflow, which also publishes it.
 name: package
 
 on:
@@ -77,20 +77,3 @@ jobs:
         with:
           name: ${{ inputs.package }}
           path: artifacts/${{ inputs.package }}.*.nupkg
-
-  publish:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-    environment: nuget
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.package }}
-          path: artifacts
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
-      - run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
