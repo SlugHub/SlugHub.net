@@ -1,85 +1,33 @@
-# SlugHub #
-## Highly configurable URL slug generator, with persistent storage ##
+# SlugHub.net
 
-SlugHub takes a string as an input, and converts it into URL friendly `slug`
+Highly configurable URL slug generator for .NET, with pluggable persistent storage.
 
-For example:
+| Package | Folder | Description |
+|---|---|---|
+| [SlugHub](https://www.nuget.org/packages/SlugHub) | [`SlugHub/`](SlugHub/) | Slug generator with in-memory storage |
+| [SlugHub.SqlServer](https://www.nuget.org/packages/SlugHub.SqlServer) | [`SlugHub.SqlServer/`](SlugHub.SqlServer/) | SQL Server slug store |
+| [SlugHub.CosmosDB](https://www.nuget.org/packages/SlugHub.CosmosDB) | [`SlugHub.CosmosDB/`](SlugHub.CosmosDB/) | Azure Cosmos DB slug store |
 
-	var slugGenerator = new SlugGenerator();
-	var slug = await slugGenerator.GenerateSlugAsync("Some text that needs slugging");
-	Console.WriteLine(slug);
+All packages target `net8.0` and `net10.0`.
 
-Output:
+## Building
 
-> some-text-that-needs-slugging
+    dotnet build SlugHub.slnx
+    dotnet test SlugHub.slnx
 
-#### Grouping Key ####
-The `Slug` object has an optional.0 `GroupingKey` property.  
-This can be used to differentiate between applications, accounts, domains, or anything. You could use this to deploy a multi-tenant service that serves slugs to all of your services.
+The SqlServer and CosmosDB tests are integration tests. They are skipped unless `SLUGHUB_SQLSERVER_CONNECTION` / `SLUGHUB_COSMOSDB_CONNECTION` are set.
 
-### Generating unique slugs using iteration ###
+## Releasing
 
-Calling `GenerateSlugAsync(input)` with text that's already been slugged once (*and therefore stored in the `SlugStore` - more on that later*) will trigger an **iteration**.  
+Each package has its own GitHub Actions workflow, which only runs when that package (or something it depends on) changes. Versions live in each project's `VersionPrefix`.
 
-Let's see an example:
+To release, bump `VersionPrefix`, merge, then push a tag named `<PackageId>-v<version>`:
 
-	var slug1 = await slugGenerator.GenerateSlugAsync("My Title");
-	var slug2 = await slugGenerator.GenerateSlugAsync("My Title");
-	
-	Console.WriteLine(slug1);
-	Console.WriteLine(slug2);
-	
-The output here would be
+    git tag SlugHub-v3.0.0 && git push origin SlugHub-v3.0.0
+    git tag SlugHub.SqlServer-v1.0.0 && git push origin SlugHub.SqlServer-v1.0.0
 
->my-title  
->my-title-1
+The workflow checks the tag matches the project version and publishes to NuGet.org using the `NUGET_API_KEY` secret in the `nuget` environment. Release `SlugHub` before the store packages that depend on a new version of it.
 
-The iteration seed can be configured using `SlugGeneratorOptions` when creating an instance of `SlugGenerator`
+## History
 
-	//start at 100
-	var options = new SlugGeneratorOptions { IterationSeedValue = 100 };
-	var slugGenerator = new SlugGenerator(options);
-
-	var slug1 = await slugGenerator.GenerateSlugAsync("My Title");
-	var slug2 = await slugGenerator.GenerateSlugAsync("My Title");
-	
-	Console.WriteLine(slug1);
-	Console.WriteLine(slug2);
-
-The output here would be
-
->my-title  
->my-title-100
-
-
-### Generating unique slugs using "uniquifiers" ###
-
-Uniquifiers are things that can create a unique version of your input.  
-Imagine you want to create slugged titles for pizza shops.  
-Now let's assume one is in London, one is in Leeds.
-We can pass London and Leeds in as optional uniqueifier parameters, which will then be included, if the original slug is already taken:
-
-	var slug1 = await slugGenerator.GenerateSlugAsync("Pizza Shop", "London");
-	var slug2 = await slugGenerator.GenerateSlugAsync("Pizza Shop", "Leeds");
-	
-In this example, the 2 slugs generated would be:
-
-> pizza-shop  
-> pizza-shop-leeds
-
-This is because pizza-shop initially did not exist, so it didn't need a uniqueifier.  
-The second time it tried to generate pizza-shop, it existed, so used the uniqueifier.
-
-## Storage ##
-
-The default implementation of `ISlugStore` is a simple `InMemorySlugStore`  
-Exactly as it sounds, this simply stores slugs in memory.  
-They are not persisted outside of the application, and when the application exits, the stored slugs are lost.
-
-If you want something more persistable, simply create one, implementing the lightweight `ISlugStore` interface:
-
-    public interface ISlugStore
-    {
-        Task<bool> ExistsAsync(string slug);
-        Task StoreAsync (Slug slug);
-    }
+`SlugHub.SqlServer` and `SlugHub.CosmosDB` used to live in separate repositories (`SlugHub.net.SqlServer`, `SlugHub.net.CosmosDB`). Their full history was merged into this repository.

@@ -1,9 +1,0 @@
-mode: Mainline
-next-version: 3.0.0
-branches:
-  feature:
-      tag: useBranchName
-  master:
-    tag: ''
-ignore:
-  sha: []

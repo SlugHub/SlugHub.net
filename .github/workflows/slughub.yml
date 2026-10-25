@@ -1,0 +1,27 @@
+name: SlugHub
+
+on:
+  push:
+    branches: [master]
+    tags: ['SlugHub-v*']
+    paths:
+      - 'SlugHub/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub.yml'
+  pull_request:
+    paths:
+      - 'SlugHub/**'
+      - 'Directory.Build.props'
+      - '.github/workflows/_package.yml'
+      - '.github/workflows/slughub.yml'
+  workflow_dispatch:
+
+jobs:
+  package:
+    uses: ./.github/workflows/_package.yml
+    with:
+      package: SlugHub
+      project: SlugHub/src/SlugHub.csproj
+      tests: SlugHub/tests/SlugHub.Tests/SlugHub.Tests.csproj
+    secrets: inherit
