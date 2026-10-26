@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Authors>Cohoda LTD</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/SlugHub/SlugHub.net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/cohoda/SlugHub.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
